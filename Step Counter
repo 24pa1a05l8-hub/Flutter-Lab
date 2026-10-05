@@ -1,0 +1,225 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const HabitStepApp());
+}
+
+// --------------------------------------------------
+// STATELESS WIDGET
+// --------------------------------------------------
+
+class HabitStepApp extends StatelessWidget {
+  const HabitStepApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Daily Habit & Step Counter',
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+        useMaterial3: true,
+      ),
+      home: const StepCounterPage(),
+    );
+  }
+}
+
+// --------------------------------------------------
+// STATEFUL WIDGET
+// --------------------------------------------------
+
+class StepCounterPage extends StatefulWidget {
+  const StepCounterPage({super.key});
+
+  @override
+  State<StepCounterPage> createState() => _StepCounterPageState();
+}
+
+class _StepCounterPageState extends State<StepCounterPage> {
+  int steps = 0;
+
+  final int dailyGoal = 5000;
+
+  // Add 100 steps
+  void addSteps() {
+    setState(() {
+      steps += 100;
+
+      if (steps > dailyGoal) {
+        steps = dailyGoal;
+      }
+    });
+  }
+
+  // Reset steps
+  void resetSteps() {
+    setState(() {
+      steps = 0;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double progress = steps / dailyGoal;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Daily Habit & Step Counter'),
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            // Stateless Widget
+            const HabitTitle(),
+            const SizedBox(height: 30),
+            // Stateless Widget
+            StepProgressCard(
+              steps: steps,
+              goal: dailyGoal,
+              progress: progress,
+            ),
+            const SizedBox(height: 30),
+            Text(
+              steps >= dailyGoal ? '🎉 Daily Goal Completed!' : 'Keep Walking!',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: steps >= dailyGoal ? Colors.green : Colors.orange,
+              ),
+            ),
+            const SizedBox(height: 30),
+            // Add Steps Button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: addSteps,
+                icon: const Icon(Icons.add),
+                label: const Text(
+                  'Add 100 Steps',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+            ),
+            const SizedBox(height: 15),
+            // Reset Button
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: resetSteps,
+                icon: const Icon(Icons.refresh),
+                label: const Text(
+                  'Reset',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// --------------------------------------------------
+// STATELESS WIDGET - TITLE
+// --------------------------------------------------
+
+class HabitTitle extends StatelessWidget {
+  const HabitTitle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        Icon(
+          Icons.directions_walk,
+          size: 70,
+          color: Colors.green,
+        ),
+        SizedBox(height: 10),
+        Text(
+          'Daily Walking Habit',
+          style: TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 5),
+        Text(
+          'Track your daily steps',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// --------------------------------------------------
+// STATELESS WIDGET - STEP PROGRESS CARD
+// --------------------------------------------------
+
+class StepProgressCard extends StatelessWidget {
+  final int steps;
+  final int goal;
+  final double progress;
+
+  const StepProgressCard({
+    super.key,
+    required this.steps,
+    required this.goal,
+    required this.progress,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 5,
+      child: Padding(
+        padding: const EdgeInsets.all(25),
+        child: Column(
+          children: [
+            const Text(
+              "Today's Steps",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 15),
+            Text(
+              '$steps',
+              style: const TextStyle(
+                fontSize: 45,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+            Text(
+              'Goal: $goal steps',
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 20),
+            LinearProgressIndicator(
+              value: progress,
+              minHeight: 12,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              '${(progress * 100).toInt()}% Completed',
+              style: const TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
